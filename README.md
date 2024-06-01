@@ -1,24 +1,28 @@
-# README
+# League Simulation
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A simple football league simulation built with Ruby on Rails. This project simulates matches between teams and updates their standings accordingly.
 
-Things you may want to cover:
+## Getting Started
 
-* Ruby version
+These instructions will help you set up the project on your local machine for development and testing purposes.
 
-* System dependencies
+### Prerequisites
 
-* Configuration
+- Ruby 3.1.0
+- Rails 7.1.3.3
+- Bundler
 
-* Database creation
+### Installation
 
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+1. Clone the repository
+   ```
+   git clone https://github.com/senakurtak/league_simulation.git
+   ```
+2. Navigate to the project directory
+   ```
+  cd league_simulation
+   ```
+3. Install the required gems
+  ```
+  bundle install
+   ```
