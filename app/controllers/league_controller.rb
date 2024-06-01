@@ -5,7 +5,6 @@ class LeagueController < ApplicationController
     super
     @teams = []
     @matches = []
-    @current_week = 1
 
     team1 = Team.new("Chelsea", 10)
     team2 = Team.new("Arsenal", 8)
@@ -21,13 +20,14 @@ class LeagueController < ApplicationController
   end
 
   def index
+    session[:current_week] ||= 0
     @league_table = render_league_table
     @championship_predictions = render_championship_predictions
   end
 
   def simulate_week
-    simulate_matches_for_week(@current_week)
-    @current_week += 1
+    session[:current_week] += 1
+    simulate_matches_for_week(session[:current_week])
     render json: {
       league_table: render_league_table,
       championship_predictions: render_championship_predictions
@@ -35,9 +35,9 @@ class LeagueController < ApplicationController
   end
 
   def simulate_all
-    while @current_week <= 4
-      simulate_matches_for_week(@current_week)
-      @current_week += 1
+    while session[:current_week] < 4
+      session[:current_week] += 1
+      simulate_matches_for_week(session[:current_week])
     end
     render json: {
       league_table: render_league_table,
@@ -112,7 +112,7 @@ class LeagueController < ApplicationController
 
   def render_league_table
     @teams.sort_by! { |team| [-team.points, team.goal_difference, team.goals_scored] }
-    table_html = "<table><tr><th>Teams</th><th>PTS</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>4th Week Match Results</th></tr>"
+    table_html = "<table><tr><th>Teams</th><th>PTS</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>#{session[:current_week]}th Week Match Results</th></tr>"
     @teams.each do |team|
       table_html += "<tr><td>#{team.name}</td><td>#{team.points}</td><td>#{team.wins + team.draws + team.losses}</td><td>#{team.wins}</td><td>#{team.draws}</td><td>#{team.losses}</td><td>#{team.goal_difference}</td><td>#{match_results(team)}</td></tr>"
     end
@@ -122,7 +122,7 @@ class LeagueController < ApplicationController
 
   def match_results(team)
     results = ""
-    matches_for_week = @matches.select { |match| match.week == @current_week - 1 }
+    matches_for_week = @matches.select { |match| match.week == session[:current_week] }
     matches_for_week.each do |match|
       if match.home_team == team
         results += "#{match.home_team.name} #{match.home_goals} - #{match.away_goals} #{match.away_team.name}<br>"
@@ -135,7 +135,7 @@ class LeagueController < ApplicationController
 
   def render_championship_predictions
     total_points = @teams.sum(&:points)
-    table_html = "<table><tr><th>4th week Predictions of Championship</th><th></th></tr>"
+    table_html = "<table><tr><th>#{session[:current_week]}th week Predictions of Championship</th><th></th></tr>"
     @teams.each do |team|
       if total_points > 0
         percentage = (team.points.to_f / total_points * 100).round
