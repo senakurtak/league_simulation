@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Football League Simulation</title>
+  <meta name="csrf-token" content="<%= form_authenticity_token %>">
 </head>
 <body>
   <h1>Football League Simulation</h1>
@@ -14,12 +15,19 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     $(document).ready(function() {
+      // CSRF tokenını meta etiketinden al
+      const csrfToken = $('meta[name="csrf-token"]').attr('content');
+
       $('#simulate_week').on('click', function() {
         $.ajax({
           url: '/simulate',
           method: 'POST',
+          headers: {
+            'X-CSRF-Token': csrfToken
+          },
           success: function(data) {
             $('#league_table').html(data);
+            console.log("Yes! Here is simulating week results!! sena-logs: ", data);
           },
           error: function(error) {
             console.error("Error simulating week: ", error);

@@ -1,4 +1,5 @@
 class LeagueController < ApplicationController
+  skip_before_action :verify_authenticity_token, only: [:simulate_week]
   def initialize
     super
     @teams = []
@@ -31,8 +32,10 @@ class LeagueController < ApplicationController
       simulate_match(match)
     end
     @league_table = render_league_table
+    puts "Simulate week called"  # Bu satırı ekleyin
     render plain: @league_table
   end
+  
 
   private
 
@@ -80,7 +83,7 @@ class LeagueController < ApplicationController
 
   def render_league_table
     @teams.sort_by! { |team| [-team.points, team.goals_scored - team.goals_conceded, team.goals_scored] }
-    table_html = "<table><tr><th>Team</th><th>Points</th><th>Goals Scored</th><th>Goals Conceded</th></tr>"
+    table_html = "<table><tr><th>Team</th><th>Points</th><th>Goals Scored</th><th>Goals Conceded sena-logs vol 2</th></tr>"
     @teams.each do |team|
       table_html += "<tr><td>#{team.name}</td><td>#{team.points}</td><td>#{team.goals_scored}</td><td>#{team.goals_conceded}</td></tr>"
     end
