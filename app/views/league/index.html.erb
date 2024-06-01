@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Football League Simulation</title>
+</head>
+<body>
+  <h1>Football League Simulation</h1>
+  <div id="league_table">
+    <%= raw @league_table %>
+  </div>
+  <button id="simulate_week">Simulate Week</button>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $('#simulate_week').on('click', function() {
+        $.ajax({
+          url: '/simulate',
+          method: 'POST',
+          success: function(data) {
+            $('#league_table').html(data);
+          },
+          error: function(error) {
+            console.error("Error simulating week: ", error);
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
