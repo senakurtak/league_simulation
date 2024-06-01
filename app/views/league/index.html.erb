@@ -5,17 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Football League Simulation</title>
   <meta name="csrf-token" content="<%= form_authenticity_token %>">
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
 </head>
 <body>
   <h1>Football League Simulation</h1>
   <div id="league_table">
     <%= raw @league_table %>
   </div>
+  <div id="championship_predictions">
+    <%= raw @championship_predictions %>
+  </div>
   <button id="simulate_week">Simulate Week</button>
+  <button id="simulate_all">Play All</button>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     $(document).ready(function() {
-      // CSRF tokenını meta etiketinden al
       const csrfToken = $('meta[name="csrf-token"]').attr('content');
 
       $('#simulate_week').on('click', function() {
@@ -26,11 +43,28 @@
             'X-CSRF-Token': csrfToken
           },
           success: function(data) {
-            $('#league_table').html(data);
-            console.log("Yes! Here is simulating week results!! sena-logs: ", data);
+            $('#league_table').html(data.league_table);
+            $('#championship_predictions').html(data.championship_predictions);
           },
           error: function(error) {
             console.error("Error simulating week: ", error);
+          }
+        });
+      });
+
+      $('#simulate_all').on('click', function() {
+        $.ajax({
+          url: '/simulate_all',
+          method: 'POST',
+          headers: {
+            'X-CSRF-Token': csrfToken
+          },
+          success: function(data) {
+            $('#league_table').html(data.league_table);
+            $('#championship_predictions').html(data.championship_predictions);
+          },
+          error: function(error) {
+            console.error("Error simulating all weeks: ", error);
           }
         });
       });

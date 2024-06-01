@@ -15,14 +15,20 @@ These instructions will help you set up the project on your local machine for de
 ### Installation
 
 1. Clone the repository
-   ```
+  ```
    git clone https://github.com/senakurtak/league_simulation.git
-   ```
+  ```
 2. Navigate to the project directory
-   ```
+  ```
   cd league_simulation
-   ```
+  ```
 3. Install the required gems
   ```
   bundle install
-   ```
+  ```
+
+### Running the Server
+  ```
+  rails server
+  ```
+
