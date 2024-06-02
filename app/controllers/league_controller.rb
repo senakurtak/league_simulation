@@ -3,20 +3,7 @@ class LeagueController < ApplicationController
 
   def initialize
     super
-    @teams = []
-    @matches = []
-
-    team1 = Team.new("Chelsea", 10)
-    team2 = Team.new("Arsenal", 8)
-    team3 = Team.new("Manchester City", 6)
-    team4 = Team.new("Liverpool", 4)
-
-    add_team(team1)
-    add_team(team2)
-    add_team(team3)
-    add_team(team4)
-
-    generate_matches
+    initialize_league
   end
 
   def index
@@ -26,7 +13,12 @@ class LeagueController < ApplicationController
   end
 
   def simulate_week
-    session[:current_week] += 1
+    if session[:current_week] < 8
+      session[:current_week] += 1
+    else
+      reset_league
+      session[:current_week] = 1
+    end
     simulate_matches_for_week(session[:current_week])
     render json: {
       league_table: render_league_table,
@@ -35,9 +27,13 @@ class LeagueController < ApplicationController
   end
 
   def simulate_all
-    while session[:current_week] < 4
+    while session[:current_week] < 8
       session[:current_week] += 1
       simulate_matches_for_week(session[:current_week])
+    end
+    if session[:current_week] >= 8
+      reset_league
+      session[:current_week] = 1
     end
     render json: {
       league_table: render_league_table,
@@ -47,6 +43,44 @@ class LeagueController < ApplicationController
 
   private
 
+  def initialize_league
+    @teams = []
+    @matches = []
+
+    team1 = Team.new("Chelsea", 10)
+    team2 = Team.new("Arsenal", 8)
+    team3 = Team.new("Manchester City", 6)
+    team4 = Team.new("Liverpool", 4)
+    team5 = Team.new("Everton", 2)
+    team6 = Team.new("Newcastle", 3)
+    team7 = Team.new("Sheffield Utd", 6)
+    team8 = Team.new("Bournemouth", 4)
+
+    add_team(team1)
+    add_team(team2)
+    add_team(team3)
+    add_team(team4)
+    add_team(team5)
+    add_team(team6)
+    add_team(team7)
+    add_team(team8)
+
+    generate_matches
+  end
+
+  def reset_league
+    @teams.each do |team|
+      team.points = 0
+      team.goals_scored = 0
+      team.goals_conceded = 0
+      team.wins = 0
+      team.draws = 0
+      team.losses = 0
+    end
+    @matches = []
+    generate_matches
+  end
+
   def add_team(team)
     @teams << team
   end
@@ -54,8 +88,8 @@ class LeagueController < ApplicationController
   def generate_matches
     team_pairs = @teams.combination(2).to_a
     team_pairs.each_with_index do |pair, index|
-      create_match(pair[0], pair[1], (index % 4) + 1)
-      create_match(pair[1], pair[0], (index % 4) + 1)
+      create_match(pair[0], pair[1], (index % 8) + 1)
+      create_match(pair[1], pair[0], (index % 8) + 1)
     end
   end
 
@@ -112,7 +146,7 @@ class LeagueController < ApplicationController
 
   def render_league_table
     @teams.sort_by! { |team| [-team.points, team.goal_difference, team.goals_scored] }
-    table_html = "<table><tr><th>Teams</th><th>PTS</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>#{session[:current_week]}th Week Match Results</th></tr>"
+    table_html = "<table><tr><th>Teams</th><th>PTS</th><th>P</th><th>Win</th><th>Draw</th><th>Loss</th><th>Goal Differences</th><th>#{session[:current_week]}th Week Match Results</th></tr>"
     @teams.each do |team|
       table_html += "<tr><td>#{team.name}</td><td>#{team.points}</td><td>#{team.wins + team.draws + team.losses}</td><td>#{team.wins}</td><td>#{team.draws}</td><td>#{team.losses}</td><td>#{team.goal_difference}</td><td>#{match_results(team)}</td></tr>"
     end
