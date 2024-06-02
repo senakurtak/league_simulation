@@ -1,6 +1,7 @@
 class LeagueManager
   attr_reader :teams, :matches
 
+# Initialize the league manager, setting up teams and matches
   def initialize
     @teams = []
     @matches = []
@@ -8,6 +9,7 @@ class LeagueManager
     generate_matches
   end
 
+  # Create and add teams to the league
   def initialize_league
     team1 = Team.new("Chelsea", 10)
     team2 = Team.new("Arsenal", 8)
@@ -28,6 +30,7 @@ class LeagueManager
     add_team(team8)
   end
 
+# Reset the league to start a new season
   def reset_league
     @teams.each do |team|
       team.points = 0
@@ -41,17 +44,20 @@ class LeagueManager
     generate_matches
   end
 
+# Add a team to the league
   def add_team(team)
     @teams << team
   end
 
+# Generate the schedule for the matches
   def generate_matches
     team_pairs = @teams.combination(2).to_a
     team_pairs.each_with_index do |pair, index|
-      create_match(pair[0], pair[1], (index / 4) + 1)
+      create_match(pair[0], pair[1], (index / 4) + 1) # limitation as 2 matches per week
     end
   end
 
+# Create a match for a given week
   def create_match(home_team, away_team, week)
     match = Match.new(home_team, away_team, week)
     @matches << match

@@ -1,10 +1,12 @@
 class StatisticsCalculator
+# Initialize the statistics calculator with teams, matches, and the current week
   def initialize(teams, matches, current_week)
     @teams = teams
     @matches = matches
     @current_week = current_week
   end
 
+# Render the league table as HTML
   def render_league_table
     @teams.sort_by! { |team| [-team.points, team.goal_difference, team.goals_scored] }
     table_html = "<table><tr><th>Teams</th><th>PTS</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>#{@current_week}th Week Match Results</th></tr>"
@@ -15,6 +17,7 @@ class StatisticsCalculator
     table_html
   end
 
+# Render championship predictions as HTML
   def render_championship_predictions
     total_points = @teams.sum(&:points)
     table_html = "<table><tr><th>#{@current_week}th week Predictions of Championship</th><th></th></tr>"
@@ -29,6 +32,7 @@ class StatisticsCalculator
 
   private
 
+  # Display match results for a team
   def match_results(team)
     results = ""
     matches_for_week = @matches.select { |match| match.week == @current_week }

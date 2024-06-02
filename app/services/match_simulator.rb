@@ -1,8 +1,10 @@
 class MatchSimulator
+# Initialize the match simulator with a reference to the league manager
   def initialize(league_manager)
     @league_manager = league_manager
   end
 
+# Simulate matches for a specific week
   def simulate_matches_for_week(week)
     matches_for_week = @league_manager.matches.select { |match| match.week == week }
     matches_for_week.each do |match|
@@ -12,6 +14,7 @@ class MatchSimulator
 
   private
 
+# Simulate a match between two teams
   def simulate_match(match)
     home_advantage = 0.1
     home_strength = match.home_team.strength * (1 + home_advantage)
@@ -28,11 +31,13 @@ class MatchSimulator
     update_points(match.home_team, match.away_team, home_goals, away_goals)
   end
 
+# Update team statistics after a match
   def update_team_stats(team, goals_scored, goals_conceded)
     team.goals_scored += goals_scored
     team.goals_conceded += goals_conceded
   end
 
+# Update points for teams based on match results
   def update_points(home_team, away_team, home_goals, away_goals)
     if home_goals > away_goals
       home_team.points += 3
