@@ -88,8 +88,7 @@ class LeagueController < ApplicationController
   def generate_matches
     team_pairs = @teams.combination(2).to_a
     team_pairs.each_with_index do |pair, index|
-      create_match(pair[0], pair[1], (index % 8) + 1)
-      create_match(pair[1], pair[0], (index % 8) + 1)
+      create_match(pair[0], pair[1], (index / 4) + 1)
     end
   end
 
@@ -146,7 +145,7 @@ class LeagueController < ApplicationController
 
   def render_league_table
     @teams.sort_by! { |team| [-team.points, team.goal_difference, team.goals_scored] }
-    table_html = "<table><tr><th>Teams</th><th>PTS</th><th>P</th><th>Win</th><th>Draw</th><th>Loss</th><th>Goal Differences</th><th>#{session[:current_week]}th Week Match Results</th></tr>"
+    table_html = "<table><tr><th>Teams</th><th>PTS</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>#{session[:current_week]}th Week Match Results</th></tr>"
     @teams.each do |team|
       table_html += "<tr><td>#{team.name}</td><td>#{team.points}</td><td>#{team.wins + team.draws + team.losses}</td><td>#{team.wins}</td><td>#{team.draws}</td><td>#{team.losses}</td><td>#{team.goal_difference}</td><td>#{match_results(team)}</td></tr>"
     end
@@ -175,6 +174,9 @@ class LeagueController < ApplicationController
         percentage = (team.points.to_f / total_points * 100).round
       else
         percentage = 0
+      end
+      if session[:current_week] == 8
+        percentage = team == @teams.first ? 100 : 0
       end
       table_html += "<tr><td>#{team.name}</td><td>%#{percentage}</td></tr>"
     end
