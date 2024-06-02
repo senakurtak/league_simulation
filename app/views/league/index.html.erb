@@ -18,6 +18,15 @@
     th {
       background-color: #f2f2f2;
     }
+    .button-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    .button-container button {
+      padding: 10px 20px;
+      font-size: 16px;
+    }
   </style>
 </head>
 <body>
@@ -28,8 +37,10 @@
   <div id="championship_predictions">
     <%= raw @championship_predictions %>
   </div>
-  <button id="simulate_week">Simulate Week</button>
-  <button id="simulate_all">Play All</button>
+  <div class="button-container">
+    <button id="simulate_week">Next Week</button>
+    <button id="simulate_all">Play All</button>
+  </div>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     $(document).ready(function() {
